@@ -1,37 +1,33 @@
 import api from './api';
 
-const getPlans = async () => {
-  const response = await api.get('/investments/plans');
-  return response.data.data;
-};
-
-const createInvestment = async (planId, amount) => {
-  const response = await api.post('/investments/invest', {
-    planId,
-    amount,
-  });
-  return response.data.data;
-};
-
-const getMyInvestments = async () => {
-  const response = await api.get('/investments/my-investments');
-  return response.data.data;
-};
-
-const getInvestmentById = async (investmentId) => {
-  const response = await api.get(`/investments/${investmentId}`);
-  return response.data.data;
-};
-
-const stopInvestment = async (investmentId) => {
-  const response = await api.post(`/investments/${investmentId}/stop`);
-  return response.data.data;
-};
-
 export const investmentService = {
-  getPlans,
-  createInvestment,
-  getMyInvestments,
-  getInvestmentById,
-  stopInvestment,
+  // Get all plans
+  getPlans: async () => {
+    const response = await api.get('/api/investments/plans');
+    return response.data.data;
+  },
+
+  // Create an investment
+  createInvestment: async (planId, amount) => {
+    const response = await api.post('/api/investments/invest', { planId, amount });
+    return response.data.data;
+  },
+
+  // Get user's investments
+  getMyInvestments: async () => {
+    const response = await api.get('/api/investments/my-investments');
+    return response.data.data;
+  },
+
+  // Get investment by ID
+  getInvestmentById: async (investmentId) => {
+    const response = await api.get(`/api/investments/${investmentId}`);
+    return response.data.data;
+  },
+
+  // Stop investment
+  stopInvestment: async (investmentId) => {
+    const response = await api.post(`/api/investments/${investmentId}/stop`);
+    return response.data.data;
+  },
 };

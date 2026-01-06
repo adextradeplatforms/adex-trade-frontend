@@ -1,8 +1,10 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Use VITE_API_URL from .env or fallback to backend URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://adex-trade-backend.onrender.com';
 
+// Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,16 +12,13 @@ const api = axios.create({
   },
 });
 
-// Request interceptor: add token and language header
+// Add token and language to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
     const language = localStorage.getItem('language') || 'en';
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     config.headers['Accept-Language'] = language;
 
     return config;
@@ -27,7 +26,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle token refresh
+// Handle 401 (unauthorized) and refresh token
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -37,7 +36,6 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem('refreshToken');
-
       if (!refreshToken) {
         localStorage.removeItem('accessToken');
         toast.error('Session expired. Please login again.');
@@ -46,10 +44,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
-          refreshToken,
-        });
-
+        const response = await axios.post(`${API_BASE_URL}/api/auth/refresh-token`, { refreshToken });
         const { accessToken } = response.data;
         localStorage.setItem('accessToken', accessToken);
 
@@ -64,7 +59,6 @@ api.interceptors.response.use(
       }
     }
 
-    // Handle other errors
     return Promise.reject(error);
   }
 );
