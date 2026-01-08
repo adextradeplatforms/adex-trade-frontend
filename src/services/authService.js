@@ -2,49 +2,60 @@ import api from './api';
 import toast from 'react-hot-toast';
 
 export const authService = {
-  login: async (credentials) => {
+  async login(credentials) {
     try {
       const res = await api.post('/auth/login', credentials);
-      return res.data;
+
+      const { accessToken, refreshToken, user } = res.data;
+
+      if (!accessToken || !refreshToken) {
+        throw new Error('Invalid login response');
+      }
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      return user;
     } catch (err) {
-      console.error('Login error:', err);
       toast.error(err.response?.data?.message || 'Login failed');
       throw err;
     }
   },
 
-  register: async (userData) => {
+  async register(userData) {
     try {
       const res = await api.post('/auth/register', userData);
       return res.data;
     } catch (err) {
-      console.error('Register error:', err);
       toast.error(err.response?.data?.message || 'Registration failed');
       throw err;
     }
   },
 
-  verifyEmail: async (token) => {
+  async verifyEmail(token) {
     try {
-      const res = await api.get(`/auth/verify-email?token=${token}`);
+      const res = await api.get('/auth/verify-email', {
+        params: { token },
+      });
       return res.data;
     } catch (err) {
-      console.error('Verify email error:', err);
       toast.error(err.response?.data?.message || 'Email verification failed');
       throw err;
     }
   },
 
-  getProfile: async () => {
+  async getProfile() {
     try {
       const res = await api.get('/auth/profile');
       return res.data;
     } catch (err) {
-      console.error('Get profile error:', err);
       toast.error(err.response?.data?.message || 'Failed to fetch profile');
       throw err;
     }
   },
 
-  logout: () => localStorage.clear(),
+  logout() {
+    localStorage.clear();
+    window.location.replace('/login');
+  },
 };

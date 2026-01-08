@@ -1,28 +1,31 @@
 import api from './api';
 
 export const investmentService = {
-  getPlans: async () => {
+  async getPlans() {
     const res = await api.get('/investments/plans');
-    return res.data.data;
+    return res.data;
   },
 
-  createInvestment: async (planId, amount) => {
-    const res = await api.post('/investments/invest', { planId, amount });
-    return res.data.data;
+  async createInvestment(planId, amount) {
+    const res = await api.post('/investments/invest', {
+      planId,
+      amount,
+    });
+    return res.data;
   },
 
-  getMyInvestments: async () => {
+  async getMyInvestments() {
     const res = await api.get('/investments/my-investments');
-    return res.data.data;
+    return res.data;
   },
 
-  getInvestmentById: async (id) => {
+  async getInvestmentById(id) {
     const res = await api.get(`/investments/${id}`);
-    return res.data.data;
+    return res.data;
   },
 
-  stopInvestment: async (id) => {
+  async stopInvestment(id) {
     const res = await api.post(`/investments/${id}/stop`);
-    return res.data.data;
+    return res.data;
   },
 };
