@@ -26,18 +26,13 @@ const RegisterPage = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'referralCode' ? value.toUpperCase() : value
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
 
+    // Basic validations
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -54,26 +49,31 @@ const RegisterPage = () => {
     }
 
     setLoading(true);
-
     try {
+      // Call backend register API
       const response = await authService.register(formData);
-      const data = response.data;
 
+      // If successful, show toast
       toast.success(
         <div className="flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
-          <span>Registration successful! Check your email to verify.</span>
+          <span>Registration successful! Check your email.</span>
         </div>
       );
 
-      // Redirect to Verify Email Page with email passed
-      setTimeout(() => {
-        navigate('/verify-email', { state: { email: formData.email } });
-      }, 1500);
+      // ✅ Navigate to VerifyEmailPage instead of login
+      navigate('/verify-email', { state: { email: formData.email } });
 
     } catch (error) {
       console.error('Registration error:', error);
-      toast.error(error.response?.data?.message || 'Registration failed');
+
+      // Handle backend errors properly
+      if (error.response?.data?.message === 'Email already exists') {
+        toast.error('Email already registered! Please login instead.');
+        navigate('/login');
+      } else {
+        toast.error(error.response?.data?.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }
