@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Eye, EyeOff, Lock, Mail, User, Phone, Gift, CheckCircle, ArrowLeft, Sparkles 
+import {
+  Eye, EyeOff, Lock, Mail, User, Phone, Gift, CheckCircle, ArrowLeft, Sparkles
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authService } from '../../services/authService';
@@ -26,11 +26,17 @@ const RegisterPage = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'referralCode' ? value.toUpperCase() : value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
 
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
@@ -48,16 +54,23 @@ const RegisterPage = () => {
     }
 
     setLoading(true);
+
     try {
       const response = await authService.register(formData);
+      const data = response.data;
+
       toast.success(
         <div className="flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
-          <span>Registration successful! Check your email.</span>
+          <span>Registration successful! Check your email to verify.</span>
         </div>
       );
 
-      setTimeout(() => navigate('/login'), 2000);
+      // Redirect to Verify Email Page with email passed
+      setTimeout(() => {
+        navigate('/verify-email', { state: { email: formData.email } });
+      }, 1500);
+
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.response?.data?.message || 'Registration failed');

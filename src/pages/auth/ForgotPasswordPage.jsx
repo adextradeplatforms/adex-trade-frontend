@@ -43,9 +43,7 @@ const ForgotPasswordPage = () => {
       toast.success('Password reset email sent');
     } catch (err) {
       console.error(err);
-      toast.error(
-        err?.response?.data?.message || 'Failed to send reset email'
-      );
+      toast.error(err?.response?.data?.message || 'Failed to send reset email');
     } finally {
       setLoading(false);
     }
@@ -111,7 +109,7 @@ const ForgotPasswordPage = () => {
 
             <button
               onClick={() => navigate('/login')}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition"
             >
               Back to Login
               <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -196,7 +194,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition"
             >
               {loading ? (
                 <>
@@ -204,28 +202,3 @@ const ForgotPasswordPage = () => {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-                  />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Send Reset Link
-                </>
-              )}
-            </button>
-          </form>
-
-          <p className="text-sm text-center text-gray-600 mt-6">
-            Remember your password?{' '}
-            <Link to="/login" className="font-bold text-purple-600 hover:underline">
-              Sign In
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ForgotPasswordPage;

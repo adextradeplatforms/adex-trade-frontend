@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Lock,
@@ -32,6 +32,13 @@ const ResetPasswordPage = () => {
   const [tokenValid, setTokenValid] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const redirectTimeout = useRef(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => clearTimeout(redirectTimeout.current);
+  }, []);
+
   /* =========================
      VERIFY TOKEN
   ========================== */
@@ -44,9 +51,7 @@ const ResetPasswordPage = () => {
 
     const verifyToken = async () => {
       try {
-        await api.get(`/password/verify-token`, {
-          params: { token }
-        });
+        await api.get('/password/verify-token', { params: { token } });
         setTokenValid(true);
       } catch (err) {
         console.error(err);
@@ -85,20 +90,15 @@ const ResetPasswordPage = () => {
     setLoading(true);
 
     try {
-      await api.post('/password/reset', {
-        token,
-        newPassword
-      });
+      await api.post('/password/reset', { token, newPassword });
 
       setSuccess(true);
       toast.success('Password reset successful');
 
-      setTimeout(() => navigate('/login'), 3000);
+      redirectTimeout.current = setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
       console.error(err);
-      toast.error(
-        err?.response?.data?.message || 'Failed to reset password'
-      );
+      toast.error(err?.response?.data?.message || 'Failed to reset password');
     } finally {
       setLoading(false);
     }
@@ -140,7 +140,7 @@ const ResetPasswordPage = () => {
           </p>
           <button
             onClick={() => navigate('/forgot-password')}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold hover:opacity-90 transition"
           >
             Request New Link
           </button>
@@ -165,7 +165,7 @@ const ResetPasswordPage = () => {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold hover:opacity-90 transition"
           >
             Go to Login
           </button>
@@ -201,9 +201,7 @@ const ResetPasswordPage = () => {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShow({ ...show, newPassword: !show.newPassword })
-                }
+                onClick={() => setShow({ ...show, newPassword: !show.newPassword })}
                 className="absolute right-4 top-1/2 -translate-y-1/2"
               >
                 {show.newPassword ? <EyeOff /> : <Eye />}
@@ -230,10 +228,7 @@ const ResetPasswordPage = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setShow({
-                    ...show,
-                    confirmPassword: !show.confirmPassword
-                  })
+                  setShow({ ...show, confirmPassword: !show.confirmPassword })
                 }
                 className="absolute right-4 top-1/2 -translate-y-1/2"
               >
@@ -245,11 +240,15 @@ const ResetPasswordPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-2"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-2 hover:opacity-90 transition"
           >
             {loading ? (
               <>
-                <Loader className="animate-spin" />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                />
                 Resetting…
               </>
             ) : (
