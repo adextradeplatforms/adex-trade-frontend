@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  ArrowLeft,
-  Mail,
-  Send,
-  CheckCircle
-} from 'lucide-react';
+import { ArrowLeft, Mail, Send, CheckCircle } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -17,12 +12,10 @@ const ForgotPasswordPage = () => {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
-  const isValidEmail = (value) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const cleanEmail = email.trim().toLowerCase();
 
     if (!cleanEmail) {
@@ -109,7 +102,7 @@ const ForgotPasswordPage = () => {
 
             <button
               onClick={() => navigate('/login')}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
             >
               Back to Login
               <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -140,12 +133,12 @@ const ForgotPasswordPage = () => {
         <motion.div
           animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-0 right-0 w-96 h-96 bg-purple-300 blur-3xl opacity-20"
+          className="absolute top-0 right-0 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20"
         />
         <motion.div
           animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300 blur-3xl opacity-20"
+          className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -167,9 +160,7 @@ const ForgotPasswordPage = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Forgot Password?
           </h1>
-          <p className="text-gray-600 mt-2">
-            We’ll send you reset instructions
-          </p>
+          <p className="text-gray-600 mt-2">We’ll send you reset instructions</p>
         </div>
 
         {/* Card */}
@@ -177,8 +168,7 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                <Mail className="w-4 h-4 text-purple-500" />
-                Email Address
+                <Mail className="w-4 h-4 text-purple-500" /> Email Address
               </label>
               <input
                 type="email"
@@ -194,11 +184,32 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
             >
               {loading ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                />
+              ) : (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                  <Send className="w-5 h-5" /> Send Reset Link
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="text-sm text-center text-gray-600 mt-6">
+            Remember your password?{' '}
+            <Link to="/login" className="font-bold text-purple-600 hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ForgotPasswordPage;
