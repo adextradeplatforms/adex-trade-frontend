@@ -8,17 +8,27 @@ export const authService = {
   async login(credentials) {
     try {
       const res = await api.post('/auth/login', credentials);
-      const { user, accessToken, refreshToken, twoFactorRequired } = res.data;
 
-      // Store tokens if present
+      // ✅ CORRECT extraction
+      const { success, message, data } = res.data;
+
+      if (!success || !data) {
+        throw new Error(message || 'Invalid login response');
+      }
+
+      const { user, accessToken, refreshToken, twoFactorRequired } = data;
+
       if (accessToken) localStorage.setItem('accessToken', accessToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
-      // Return full data for frontend
       return { user, accessToken, refreshToken, twoFactorRequired };
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || 'Login failed';
-      toast.error(message);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Login failed';
+
+      toast.error(msg);
       throw err;
     }
   },
@@ -31,8 +41,11 @@ export const authService = {
       const res = await api.post('/auth/register', userData);
       return res.data;
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || 'Registration failed';
-      toast.error(message);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Registration failed';
+      toast.error(msg);
       throw err;
     }
   },
@@ -47,8 +60,11 @@ export const authService = {
       });
       return res.data;
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || 'Email verification failed';
-      toast.error(message);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Email verification failed';
+      toast.error(msg);
       throw err;
     }
   },
@@ -61,8 +77,11 @@ export const authService = {
       const res = await api.get('/auth/profile');
       return res.data;
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || 'Failed to fetch profile';
-      toast.error(message);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to fetch profile';
+      toast.error(msg);
       throw err;
     }
   },
