@@ -2,36 +2,44 @@ import api from './api';
 import toast from 'react-hot-toast';
 
 export const authService = {
+  // ---------------------------
+  // LOGIN
+  // ---------------------------
   async login(credentials) {
     try {
       const res = await api.post('/auth/login', credentials);
+      const { user, accessToken, refreshToken, twoFactorRequired } = res.data;
 
-      const { accessToken, refreshToken, user } = res.data;
+      // Store tokens if present
+      if (accessToken) localStorage.setItem('accessToken', accessToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
-      if (!accessToken || !refreshToken) {
-        throw new Error('Invalid login response');
-      }
-
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
-      return user;
+      // Return full data for frontend
+      return { user, accessToken, refreshToken, twoFactorRequired };
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      const message = err?.response?.data?.message || err?.message || 'Login failed';
+      toast.error(message);
       throw err;
     }
   },
 
+  // ---------------------------
+  // REGISTER
+  // ---------------------------
   async register(userData) {
     try {
       const res = await api.post('/auth/register', userData);
       return res.data;
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      const message = err?.response?.data?.message || err?.message || 'Registration failed';
+      toast.error(message);
       throw err;
     }
   },
 
+  // ---------------------------
+  // VERIFY EMAIL
+  // ---------------------------
   async verifyEmail(token) {
     try {
       const res = await api.get('/auth/verify-email', {
@@ -39,23 +47,32 @@ export const authService = {
       });
       return res.data;
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Email verification failed');
+      const message = err?.response?.data?.message || err?.message || 'Email verification failed';
+      toast.error(message);
       throw err;
     }
   },
 
+  // ---------------------------
+  // GET PROFILE
+  // ---------------------------
   async getProfile() {
     try {
       const res = await api.get('/auth/profile');
       return res.data;
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to fetch profile');
+      const message = err?.response?.data?.message || err?.message || 'Failed to fetch profile';
+      toast.error(message);
       throw err;
     }
   },
 
+  // ---------------------------
+  // LOGOUT
+  // ---------------------------
   logout() {
-    localStorage.clear();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     window.location.replace('/login');
   },
 };
